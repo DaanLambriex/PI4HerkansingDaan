@@ -29,3 +29,27 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.rating {
+    display: inline-flex;
+    font-size: 2rem;
+}
+
+    .rating label {
+        position: relative;
+        width: 1em;
+        font-size: 24px;
+        color: white;
+        cursor: default;
+    }
+
+    .rating .full {
+        color: #ffc107; /* rode kleur voor volledig ingekleurde sterren */
+    }
+
+    .rating .half {
+        position: absolute;
+        width: 50%;
+        color: #ffc107; /* Gele kleur voor de linkerhelft */
+        overflow: hidden;
+    }
