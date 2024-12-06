@@ -1,0 +1,162 @@
+﻿@model IEnumerable<PI4Daan.Collectible>
+@using Microsoft.AspNetCore.Http
+
+<div class="container mt-4">
+    <h1 class="mb-4">Mijn Verzameling</h1>
+
+    <!-- Filters -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h5 class="card-title">Filters</h5>
+                <form method="get">
+                    <!-- Zoekbalk -->
+                    <div class="mb-4">
+                        <label for="searchQuery" class="form-label">Zoeken</label>
+                        <input type="text" id="searchQuery" name="searchQuery" class="form-control" placeholder="Zoek op naam of beschrijving" value="@(ViewData["searchQuery"] ?? "")" />
+                    </div>
+
+                    <!-- Categorieën -->
+                    <div class="mb-4">
+                        <label class="form-label">Categorie</label>
+                        @foreach (var category in (ViewBag.Categories as List<string>))
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="categories" value="@category" @(Context.Request.Query["categories"].Contains(category) ? "checked" : "") />
+                                <label class="form-check-label">@category</label>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Prijsbereik -->
+                    <div class="mb-4">
+                        <label class="form-label">Prijs (€)</label>
+                        <div class="d-flex gap-2">
+                            <input type="number" name="minPrice" class="form-control" placeholder="Min" value="@(ViewData["minPrice"] ?? "")" />
+                            <input type="number" name="maxPrice" class="form-control" placeholder="Max" value="@(ViewData["maxPrice"] ?? "")" />
+                        </div>
+                    </div>
+
+                    <!-- Waarde -->
+                    <div class="mb-4">
+                        <label class="form-label">Waarde (€)</label>
+                        <div class="d-flex gap-2">
+                            <input type="number" name="minValue" class="form-control" placeholder="Min" value="@(ViewData["minValue"] ?? "")" />
+                            <input type="number" name="maxValue" class="form-control" placeholder="Max" value="@(ViewData["maxValue"] ?? "")" />
+                        </div>
+                    </div>
+
+                    <!-- Percentage Filter -->
+                    <div class="mb-4">
+                        <label class="form-label">Percentage Filter</label>
+                        <div class="slider-wrapper">
+                            <div class="slider-value" id="minPercentageLabel">@(ViewData["minPercentage"] ?? 0)</div>
+                            <input type="range" id="minPercentage" name="minPercentage" min="0" max="100" step="1" value="@(ViewData["minPercentage"] ?? 0)" oninput="document.getElementById('minPercentageLabel').innerText = this.value">
+                        </div>
+                        <div class="slider-wrapper">
+                            <div class="slider-value" id="maxPercentageLabel">@(ViewData["maxPercentage"] ?? 100)</div>
+                            <input type="range" id="maxPercentage" name="maxPercentage" min="0" max="100" step="1" value="@(ViewData["maxPercentage"] ?? 100)" oninput="document.getElementById('maxPercentageLabel').innerText = this.value">
+                        </div>
+                    </div>
+
+                    <!-- Merk -->
+                    <div class="mb-4">
+                        <label class="form-label">Merk</label>
+                        @foreach (var brand in (ViewBag.Brands as List<string>))
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="brands" value="@brand" @(Context.Request.Query["brands"].Contains(brand) ? "checked" : "") />
+                                <label class="form-check-label">@brand</label>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Beoordeling Filter -->
+                    <div class="mb-4">
+                        <label class="form-label">Beoordeling Filter</label>
+                        <div class="slider-wrapper">
+                            <div class="slider-value" id="minRatingLabel">@(ViewData["minRating"] ?? 1)</div>
+                            <input type="range" id="minRating" name="minRating" min="1" max="5" step="0.5" value="@(ViewData["minRating"] ?? 1)" oninput="document.getElementById('minRatingLabel').innerText = this.value">
+                        </div>
+                        <div class="slider-wrapper">
+                            <div class="slider-value" id="maxRatingLabel">@(ViewData["maxRating"] ?? 5)</div>
+                            <input type="range" id="maxRating" name="maxRating" min="1" max="5" step="0.5" value="@(ViewData["maxRating"] ?? 5)" oninput="document.getElementById('maxRatingLabel').innerText = this.value">
+                        </div>
+                    </div>
+
+                    <!-- Filter- en Resetknoppen -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="/Collectibles/List" class="btn btn-secondary">Reset Filters</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Resultaten -->
+        <div class="col-md-9">
+            <div class="card p-3">
+                <h5 class="card-title">Resultaten</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Naam</th>
+                            <th>Beschrijving</th>
+                            <th>Prijs (Inkoop)</th>
+                            <th>Waarde (Dagwaarde)</th>
+                            <th>Categorie</th>
+                            <th>Merk</th>
+                            <th>Percentage</th>
+                            <th>Beoordeling</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var collectible in Model)
+                        {
+                            <tr>
+                                <td>@collectible.Name</td>
+                                <td>@collectible.Description</td>
+                                <td>@collectible.Price.ToString("C")</td>
+                                <td>@collectible.Value.ToString("C")</td>
+                                <td>@collectible.Category</td>
+                                <td>@collectible.Brand</td>
+                                <td>@collectible.Percentage.ToString("0.0")%</td>
+                                <td>
+                                    <div class="rating">
+                                        @{
+                                            for (int i = 1; i <= 5; i++) // Links naar rechts tellen
+                                            {
+                                                if (collectible.Rating >= i)
+                                                {
+                                                // Volledige ster
+                                                    <label class="star full">&#9733;</label>
+                                                }
+                                                else if (collectible.Rating >= i - 0.5)
+                                                {
+                                                    // Halve ster
+                                                    <label class="star">
+                                                        <span class="half">&#9733;</span> <!-- Gele linkerhelft -->
+                                                    </label>
+                                                }
+                                                else
+                                                {
+                                                // Geen ster
+                                                    <label class="star">&#9733;</label>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="mt-3">
+                    <p><strong>Totale Prijs:</strong> @ViewBag.TotalPrice.ToString("C")</p>
+                    <p><strong>Totale Waarde:</strong> @ViewBag.TotalValue.ToString("C")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -46,6 +46,8 @@ namespace PI4Daan.Controllers
         // GET: Collectibles/Create
         public IActionResult Create()
         {
+            ViewBag.Categories = _context.Collectibles.Select(c => c.Category).Distinct().ToList();
+            ViewBag.Brands = _context.Collectibles.Select(c => c.Brand).Distinct().ToList();
             return View();
         }
 
@@ -83,6 +85,8 @@ namespace PI4Daan.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Categories = _context.Collectibles.Select(c => c.Category).Distinct().ToList();
+            ViewBag.Brands = _context.Collectibles.Select(c => c.Brand).Distinct().ToList();
             return View(collectible);
         }
 
@@ -160,5 +164,163 @@ namespace PI4Daan.Controllers
         {
             return _context.Collectibles.Any(e => e.Id == id);
         }
+
+        // GET: Collectibles/List
+        public async Task<IActionResult> List(
+            string searchQuery,
+            List<string> categories,
+            List<string> brands,
+            decimal? minPrice,
+            decimal? maxPrice,
+            decimal? minValue,
+            decimal? maxValue,
+            decimal? minPercentage,
+            decimal? maxPercentage,
+            double? minRating,
+            double? maxRating)
+        {
+            // Start met alle collectibles
+            var collectibles = _context.Collectibles.AsQueryable();
+
+            // Zoekfilter
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                collectibles = collectibles.Where(c => c.Name.Contains(searchQuery) || c.Description.Contains(searchQuery));
+            }
+
+            // Categorie filter
+            if (categories != null && categories.Any())
+            {
+                collectibles = collectibles.Where(c => categories.Contains(c.Category));
+            }
+
+            // Merk filter
+            if (brands != null && brands.Any())
+            {
+                collectibles = collectibles.Where(c => brands.Contains(c.Brand));
+            }
+
+            // Prijsbereik filter
+            if (minPrice.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Price >= minPrice.Value);
+                ViewData["minPrice"] = minPrice;
+            }
+            if (maxPrice.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Price <= maxPrice.Value);
+                ViewData["maxPrice"] = maxPrice;
+            }
+
+            // Waardebereik filter
+            if (minValue.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Value >= minValue.Value);
+                ViewData["minValue"] = minValue;
+            }
+            if (maxValue.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Value <= maxValue.Value);
+                ViewData["maxValue"] = maxValue;
+            }
+
+            // Percentagebereik filter
+            if (minPercentage.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Percentage >= minPercentage.Value);
+                ViewData["minPercentage"] = minPercentage;
+            }
+            if (maxPercentage.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Percentage <= maxPercentage.Value);
+                ViewData["maxPercentage"] = maxPercentage;
+            }
+
+            // Beoordeling filter
+            if (minRating.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Rating >= minRating.Value);
+                ViewData["minRating"] = minRating;
+            }
+            if (maxRating.HasValue)
+            {
+                collectibles = collectibles.Where(c => c.Rating <= maxRating.Value);
+                ViewData["maxRating"] = maxRating;
+            }
+
+
+            // Haal gefilterde data op
+            var filteredCollectibles = await collectibles.ToListAsync();
+
+            // Bereken de totale prijs en waarde
+            ViewBag.TotalPrice = filteredCollectibles.Sum(c => c.Price);
+            ViewBag.TotalValue = filteredCollectibles.Sum(c => c.Value);
+
+            // Categorieën en merken doorgeven aan de View
+            ViewBag.Categories = await _context.Collectibles
+                                               .Select(c => c.Category)
+                                               .Distinct()
+                                               .ToListAsync();
+            ViewBag.Brands = await _context.Collectibles
+                                           .Select(c => c.Brand)
+                                           .Distinct()
+                                           .ToListAsync();
+
+            return View(await collectibles.ToListAsync());
+        }
+
+        public IActionResult ManageCategories()
+        {
+            var categories = _context.Collectibles.Select(c => c.Category).Distinct().ToList();
+            return View(categories);
+        }
+
+        [HttpPost]
+        public IActionResult AddCategory(string newCategory)
+        {
+            if (!string.IsNullOrWhiteSpace(newCategory) && !_context.Collectibles.Any(c => c.Category == newCategory))
+            {
+                _context.Collectibles.Add(new Collectible { Category = newCategory });
+                _context.SaveChanges();
+            }
+            return RedirectToAction("ManageCategories");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteCategory(string category)
+        {
+            var collectiblesWithCategory = _context.Collectibles.Where(c => c.Category == category).ToList();
+            _context.Collectibles.RemoveRange(collectiblesWithCategory);
+            _context.SaveChanges();
+            return RedirectToAction("ManageCategories");
+        }
+
+        public IActionResult ManageBrands()
+        {
+            var brands = _context.Collectibles.Select(c => c.Brand).Distinct().ToList();
+            return View(brands);
+        }
+
+        [HttpPost]
+        public IActionResult AddBrand(string newBrand)
+        {
+            if (!string.IsNullOrWhiteSpace(newBrand) && !_context.Collectibles.Any(c => c.Brand == newBrand))
+            {
+                _context.Collectibles.Add(new Collectible { Brand = newBrand });
+                _context.SaveChanges();
+            }
+            return RedirectToAction("ManageBrand");
+        }
+
+        [HttpPost]
+        public IActionResult DeleteBrand(string brand)
+        {
+            var collectiblesWithBrand = _context.Collectibles.Where(c => c.Brand == brand).ToList();
+            _context.Collectibles.RemoveRange(collectiblesWithBrand);
+            _context.SaveChanges();
+            return RedirectToAction("ManageBrand");
+        }
+
+
     }
 }
