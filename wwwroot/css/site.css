@@ -44,12 +44,156 @@ body {
     }
 
     .rating .full {
-        color: #ffc107; /* rode kleur voor volledig ingekleurde sterren */
+        color: #ffc107;
     }
 
     .rating .half {
         position: absolute;
         width: 50%;
-        color: #ffc107; /* Gele kleur voor de linkerhelft */
+        color: #ffc107;
         overflow: hidden;
     }
+
+/* Filters Card Styling */
+.filters {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .filters .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .filters .form-check-label {
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+.btn-reset {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+    .btn-reset:hover {
+        background-color: #e0e0e0;
+    }
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.filters .form-label {
+    font-weight: bold;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Slider Wrapper */
+.slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Waarde Styling */
+.slider-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* Slider Styling */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: #ddd;
+    outline: none;
+    transition: background 0.3s;
+}
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #ffc107; /* Goudkleur */
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #ffc107;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="range"]:hover {
+        background: #ccc;
+    }
+
+/* Knop Styling */
+.btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+/* Tabel Styling */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.rating .text-warning {
+    color: #ffc107;
+}
+
+.rating .text-muted {
+    color: #ddd;
+}

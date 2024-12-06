@@ -1,72 +1,67 @@
-﻿@model IEnumerable<PI4Daan.Collectible>
+﻿<div class="container mt-4">
+    <h1 class="mb-4 text-center">Collectibles Overzicht</h1>
 
-@{
-    ViewData["Title"] = "Index";
-}
+    <p class="text-end">
+        <a asp-action="Create" class="btn btn-primary">+ Nieuw Collectible</a>
+    </p>
 
-<h1>@ViewData["Title"]</h1>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Name)</th>
-            <th>@Html.DisplayNameFor(model => model.Description)</th>
-            <th>@Html.DisplayNameFor(model => model.Price)</th>
-            <th>@Html.DisplayNameFor(model => model.Value)</th>
-            <th>@Html.DisplayNameFor(model => model.Category)</th>
-            <th>@Html.DisplayNameFor(model => model.Brand)</th>
-            <th>@Html.DisplayNameFor(Model => Model.Percentage)</th>
-            <th>Rating</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Description)</td>
-                <td>@String.Format("{0:C}", item.Price)</td>
-                <td>@String.Format("{0:C}", item.Value)</td>
-                <td>@Html.DisplayFor(modelItem => item.Category)</td>
-                <td>@Html.DisplayFor(modelItem => item.Brand)</td>
-                <td>@item.Percentage.ToString("0.0").Replace(".", ",")%</td> <!-- Format Percentage as 5,9% -->
-                <td>
-                    <div class="rating">
-                        @{
-                            for (int i = 1; i <= 5; i++) // Links naar rechts tellen
-                            {
-                                if (item.Rating >= i)
-                                {
-                                    // Volledige ster
-                                    <label class="star full">&#9733;</label>
-                                }
-                                else if (item.Rating >= i - 0.5)
-                                {
-                                    // Halve ster
-                                    <label class="star">
-                                        <span class="half">&#9733;</span> <!-- Gele linkerhelft -->
-                                    </label>
-                                }
-                                else
-                                {
-                                    // Geen ster
-                                    <label class="star">&#9733;</label>
-                                }
-                            }
+    <div class="col-md-9">
+        <div class="card p-3">
+            <h5 class="card-title">Resultaten</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Naam</th>
+                            <th>Beschrijving</th>
+                            <th>Prijs (Inkoop)</th>
+                            <th>Waarde (Dagwaarde)</th>
+                            <th>Categorie</th>
+                            <th>Merk</th>
+                            <th>Percentage</th>
+                            <th>Beoordeling</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var collectible in Model)
+                        {
+                            <tr>
+                                <td>@collectible.Name</td>
+                                <td>@collectible.Description</td>
+                                <td>@collectible.Price.ToString("C")</td>
+                                <td>@collectible.Value.ToString("C")</td>
+                                <td>@collectible.Category</td>
+                                <td>@collectible.Brand</td>
+                                <td>@collectible.Percentage.ToString("0.0")%</td>
+                                <td>
+                                    <div class="rating">
+                                        @{
+                                            for (int i = 1; i <= 5; i++) // Links naar rechts tellen
+                                            {
+                                                if (collectible.Rating >= i)
+                                                {
+                                                    // Volledige ster
+                                                    <label class="star full">&#9733;</label>
+                                                }
+                                                else if (collectible.Rating >= i - 0.5)
+                                                {
+                                                    // Halve ster
+                                                    <label class="star">
+                                                        <span class="half">&#9733;</span> <!-- Gele linkerhelft -->
+                                                    </label>
+                                                }
+                                                else
+                                                {
+                                                    // Geen ster
+                                                    <label class="star">&#9733;</label>
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
                         }
-                    </div>
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    </tbody>
+                </table>
+        </div>
+    </div>
+</div>
