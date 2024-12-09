@@ -22,7 +22,21 @@ namespace PI4Daan.Controllers
         // GET: Collectibles
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Collectibles.ToListAsync());
+            // Haal de collectibles op uit de database
+            var collectibles = await _context.Collectibles
+                .Include(c => c.Brand)
+                .Include(c => c.Category)
+                .ToListAsync();
+
+            // Controleer of de lijst leeg of null is
+            if (!collectibles.Any())
+            {
+                // Voeg een bericht toe voor de gebruiker
+                ViewBag.Message = "Er zijn geen collectibles beschikbaar.";
+            }
+
+            // Retourneer de lijst aan de view
+            return View(collectibles);
         }
 
         // GET: Collectibles/Details/5
@@ -34,6 +48,8 @@ namespace PI4Daan.Controllers
             }
 
             var collectible = await _context.Collectibles
+                .Include(c => c.Category) // Voeg Category toe
+                .Include(c => c.Brand) // Voeg Brand toe
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (collectible == null)
             {
@@ -46,8 +62,8 @@ namespace PI4Daan.Controllers
         // GET: Collectibles/Create
         public IActionResult Create()
         {
-            ViewBag.Categories = _context.Collectibles.Select(c => c.Category).Distinct().ToList();
-            ViewBag.Brands = _context.Collectibles.Select(c => c.Brand).Distinct().ToList();
+            ViewBag.Categories = _context.Categories.ToList();
+            ViewBag.Brands = _context.Brands.ToList();
             return View();
         }
 
@@ -56,19 +72,21 @@ namespace PI4Daan.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Value,Category,Brand,Percentage,Rating")] Collectible collectible)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Value,Percentage,Rating,CategoryId,BrandId")] Collectible collectible)
         {
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (var error in errors)
+            {
+                Console.WriteLine(error.ErrorMessage); // Logt de validatiefouten
+            }
             if (ModelState.IsValid)
             {
-                // Valideer de prijs en waarde op correct formaat
-                collectible.Price = Math.Round(collectible.Price, 2);
-                collectible.Value = Math.Round(collectible.Value, 2);
-                collectible.Percentage = Math.Round(collectible.Percentage, 1);
-
                 _context.Add(collectible);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            ViewBag.Brands = await _context.Brands.ToListAsync();
             return View(collectible);
         }
 
@@ -85,8 +103,8 @@ namespace PI4Daan.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Categories = _context.Collectibles.Select(c => c.Category).Distinct().ToList();
-            ViewBag.Brands = _context.Collectibles.Select(c => c.Brand).Distinct().ToList();
+            ViewBag.Categories = _context.Categories.ToList();
+            ViewBag.Brands = _context.Brands.ToList();
             return View(collectible);
         }
 
@@ -95,17 +113,25 @@ namespace PI4Daan.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Value,Category,Brand,Percentage,Rating")] Collectible collectible)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Value,Percentage,Rating,CategoryId,BrandId")] Collectible collectible)
         {
             if (id != collectible.Id)
             {
                 return NotFound();
             }
 
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 collectible.Percentage = Math.Round(collectible.Percentage, 1);
-
                 try
                 {
                     _context.Update(collectible);
@@ -124,6 +150,9 @@ namespace PI4Daan.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            // Herlaad dropdowns als er een fout is
+            ViewBag.Categories = _context.Categories.ToList() ?? new List<Category>();
+            ViewBag.Brands = _context.Brands.ToList() ?? new List<Brand>();
             return View(collectible);
         }
 
@@ -136,6 +165,8 @@ namespace PI4Daan.Controllers
             }
 
             var collectible = await _context.Collectibles
+                .Include(c => c.Category) // Voeg Category toe
+                .Include(c => c.Brand) // Voeg Brand toe
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (collectible == null)
             {
@@ -180,7 +211,10 @@ namespace PI4Daan.Controllers
             double? maxRating)
         {
             // Start met alle collectibles
-            var collectibles = _context.Collectibles.AsQueryable();
+            var collectibles = _context.Collectibles
+                                        .Include(c => c.Category)
+                                        .Include(c => c.Brand)
+                                        .AsQueryable();
 
             // Zoekfilter
             if (!string.IsNullOrEmpty(searchQuery))
@@ -191,13 +225,13 @@ namespace PI4Daan.Controllers
             // Categorie filter
             if (categories != null && categories.Any())
             {
-                collectibles = collectibles.Where(c => categories.Contains(c.Category));
+                collectibles = collectibles.Where(c => categories.Contains(c.Category.Name));
             }
 
             // Merk filter
             if (brands != null && brands.Any())
             {
-                collectibles = collectibles.Where(c => brands.Contains(c.Brand));
+                collectibles = collectibles.Where(c => brands.Contains(c.Brand.Name));
             }
 
             // Prijsbereik filter
@@ -257,68 +291,80 @@ namespace PI4Daan.Controllers
             ViewBag.TotalValue = filteredCollectibles.Sum(c => c.Value);
 
             // Categorieën en merken doorgeven aan de View
-            ViewBag.Categories = await _context.Collectibles
-                                               .Select(c => c.Category)
-                                               .Distinct()
-                                               .ToListAsync();
-            ViewBag.Brands = await _context.Collectibles
-                                           .Select(c => c.Brand)
+            ViewBag.Categories = _context.Categories
+                                       .Select(c => c.Name)
+                                       .ToList();
+            foreach (var category in ViewBag.Categories as List<string>)
+            {
+                Console.WriteLine(category);
+            }
+
+            ViewBag.Brands = await _context.Brands
+                                           .Select(b => b.Name)
                                            .Distinct()
                                            .ToListAsync();
 
-            return View(await collectibles.ToListAsync());
+            return View(filteredCollectibles);
         }
 
+        // Overzicht van categorieën
         public IActionResult ManageCategories()
         {
-            var categories = _context.Collectibles.Select(c => c.Category).Distinct().ToList();
+            var categories = _context.Categories.ToList();
             return View(categories);
         }
 
         [HttpPost]
-        public IActionResult AddCategory(string newCategory)
+        public IActionResult AddCategory(string name)
         {
-            if (!string.IsNullOrWhiteSpace(newCategory) && !_context.Collectibles.Any(c => c.Category == newCategory))
+            if (!string.IsNullOrEmpty(name) && !_context.Categories.Any(c => c.Name == name))
             {
-                _context.Collectibles.Add(new Collectible { Category = newCategory });
+                _context.Categories.Add(new Category { Name = name });
                 _context.SaveChanges();
             }
-            return RedirectToAction("ManageCategories");
+            return RedirectToAction(nameof(ManageCategories));
         }
 
         [HttpPost]
-        public IActionResult DeleteCategory(string category)
+        public IActionResult DeleteCategory(int id)
         {
-            var collectiblesWithCategory = _context.Collectibles.Where(c => c.Category == category).ToList();
-            _context.Collectibles.RemoveRange(collectiblesWithCategory);
-            _context.SaveChanges();
-            return RedirectToAction("ManageCategories");
+            var category = _context.Categories.Find(id);
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+                _context.SaveChanges();
+            }
+            return RedirectToAction(nameof(ManageCategories));
         }
 
+        // Overzicht van merken
         public IActionResult ManageBrands()
         {
-            var brands = _context.Collectibles.Select(c => c.Brand).Distinct().ToList();
+            var brands = _context.Brands.ToList();
             return View(brands);
         }
 
         [HttpPost]
-        public IActionResult AddBrand(string newBrand)
+        public IActionResult AddBrand(string name)
         {
-            if (!string.IsNullOrWhiteSpace(newBrand) && !_context.Collectibles.Any(c => c.Brand == newBrand))
+            if (!string.IsNullOrEmpty(name) && !_context.Brands.Any(b => b.Name == name))
             {
-                _context.Collectibles.Add(new Collectible { Brand = newBrand });
+                _context.Brands.Add(new Brand { Name = name });
                 _context.SaveChanges();
             }
-            return RedirectToAction("ManageBrand");
+            return RedirectToAction(nameof(ManageBrands)); // Of terug naar de huidige pagina
         }
 
         [HttpPost]
-        public IActionResult DeleteBrand(string brand)
+        public IActionResult DeleteBrand(int id)
         {
-            var collectiblesWithBrand = _context.Collectibles.Where(c => c.Brand == brand).ToList();
-            _context.Collectibles.RemoveRange(collectiblesWithBrand);
-            _context.SaveChanges();
-            return RedirectToAction("ManageBrand");
+            var brand = _context.Brands.Find(id);
+            if (brand != null)
+            {
+                _context.Brands.Remove(brand);
+                _context.SaveChanges();
+            }
+            return RedirectToAction(nameof(ManageBrands));
         }
 
 

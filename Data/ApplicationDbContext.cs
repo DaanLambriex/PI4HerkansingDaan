@@ -18,5 +18,6 @@ namespace PI4Daan.Data
 
         public DbSet<Collectible> Collectibles { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Brand> Brands { get; set; }
     }
 }
