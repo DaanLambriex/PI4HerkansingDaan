@@ -1,4 +1,6 @@
-﻿<div class="container mt-4">
+﻿@model IEnumerable<PI4Daan.Collectible>
+
+<div class="container mt-4">
     <h1 class="mb-4 text-center">Collectibles Overzicht</h1>
 
     <p class="text-end">
@@ -8,6 +10,8 @@
     <div class="col-md-9">
         <div class="card p-3">
             <h5 class="card-title">Resultaten</h5>
+            @if (Model != null && Model.Any())
+            {
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -29,8 +33,8 @@
                                 <td>@collectible.Description</td>
                                 <td>@collectible.Price.ToString("C")</td>
                                 <td>@collectible.Value.ToString("C")</td>
-                                <td>@collectible.Category</td>
-                                <td>@collectible.Brand</td>
+                                <td>@collectible.Category?.Name</td>
+                                <td>@collectible.Brand?.Name</td>
                                 <td>@collectible.Percentage.ToString("0.0")%</td>
                                 <td>
                                     <div class="rating">
@@ -58,10 +62,22 @@
                                         }
                                     </div>
                                 </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@collectible.Id" class="btn btn-warning">Edit</a> |
+                                    <a asp-action="Details" asp-route-id="@collectible.Id" class="btn btn-info">Details</a> |
+                                    <a asp-action="Delete" asp-route-id="@collectible.Id" class="btn btn-danger">Delete</a>
+                                </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    @ViewBag.Message
+                </div>
+            }
         </div>
     </div>
 </div>
