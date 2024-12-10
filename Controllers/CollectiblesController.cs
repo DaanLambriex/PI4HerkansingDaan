@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace PI4Daan.Controllers
         }
 
         // GET: Collectibles
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             // Haal de collectibles op uit de database
@@ -40,6 +42,7 @@ namespace PI4Daan.Controllers
         }
 
         // GET: Collectibles/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -60,6 +63,7 @@ namespace PI4Daan.Controllers
         }
 
         // GET: Collectibles/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewBag.Categories = _context.Categories.ToList();
@@ -70,6 +74,7 @@ namespace PI4Daan.Controllers
         // POST: Collectibles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Value,Percentage,Rating,CategoryId,BrandId")] Collectible collectible)
@@ -91,6 +96,7 @@ namespace PI4Daan.Controllers
         }
 
         // GET: Collectibles/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -111,6 +117,7 @@ namespace PI4Daan.Controllers
         // POST: Collectibles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Value,Percentage,Rating,CategoryId,BrandId")] Collectible collectible)
@@ -157,6 +164,7 @@ namespace PI4Daan.Controllers
         }
 
         // GET: Collectibles/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -177,6 +185,7 @@ namespace PI4Daan.Controllers
         }
 
         // POST: Collectibles/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -210,6 +219,16 @@ namespace PI4Daan.Controllers
             double? minRating,
             double? maxRating)
         {
+            // Laad merken en categorieën, zelfs voor uitgelogde gebruikers
+            ViewBag.Categories = await _context.Categories
+                                               .Select(c => c.Name)
+                                               .Distinct()
+                                               .ToListAsync();
+            ViewBag.Brands = await _context.Brands
+                                           .Select(b => b.Name)
+                                           .Distinct()
+                                           .ToListAsync();
+
             // Start met alle collectibles
             var collectibles = _context.Collectibles
                                         .Include(c => c.Category)
@@ -301,33 +320,18 @@ namespace PI4Daan.Controllers
                 Console.WriteLine(category);
             }
 
-            ViewBag.Brands = await _context.Brands
-                                           .Select(b => b.Name)
-                                           .Distinct()
-                                           .ToListAsync();
-
-            // Bereken het verschil per categorie
-            var categoryDifferences = _context.Collectibles
-                .GroupBy(c => c.Category.Name)
-                .Select(g => new
-                {
-                    Category = g.Key,
-                    TotalDifference = g.Sum(c => c.Value - c.Price),
-                    AverageDifference = g.Average(c => c.Value - c.Price)
-                }).ToList();
-
-            ViewBag.CategoryDifferences = categoryDifferences;
-
             return View(filteredCollectibles);
         }
 
         // Overzicht van categorieën
+        [Authorize]
         public IActionResult ManageCategories()
         {
             var categories = _context.Categories.ToList();
             return View(categories);
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult AddCategory(string name)
         {
@@ -339,6 +343,7 @@ namespace PI4Daan.Controllers
             return RedirectToAction(nameof(ManageCategories));
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult DeleteCategory(int id)
         {
@@ -352,6 +357,7 @@ namespace PI4Daan.Controllers
         }
 
         // Overzicht van merken
+        [Authorize]
         public IActionResult ManageBrands()
         {
             var brands = _context.Brands.ToList();
@@ -369,6 +375,7 @@ namespace PI4Daan.Controllers
             return RedirectToAction(nameof(ManageBrands)); // Of terug naar de huidige pagina
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult DeleteBrand(int id)
         {
