@@ -381,6 +381,29 @@ namespace PI4Daan.Controllers
             return RedirectToAction(nameof(ManageBrands));
         }
 
+        public async Task<IActionResult> CategoryDifferences()
+        {
+            // Haal de collectibles op inclusief categorieën
+            var collectibles = await _context.Collectibles
+                                             .Include(c => c.Category)
+                                             .ToListAsync();
+
+            // Bereken het verschil per categorie
+            var categoryDifferences = collectibles
+                .GroupBy(c => c.Category.Name)
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    TotalPrice = g.Sum(c => c.Price),
+                    TotalValue = g.Sum(c => c.Value),
+                    TotalDifference = g.Sum(c => c.Value - c.Price)
+                })
+                .ToList();
+
+            // Stuur de data naar de view
+            return View(categoryDifferences);
+        }
+
 
     }
 }
