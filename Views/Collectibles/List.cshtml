@@ -108,6 +108,7 @@
                             <th>Merk</th>
                             <th>Percentage</th>
                             <th>Beoordeling</th>
+                            <th>Verschil Prijs-Waarde</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -147,6 +148,7 @@
                                         }
                                     </div>
                                 </td>
+                                <td>@((collectible.Value - collectible.Price).ToString("C"))</td>
                             </tr>
                         }
                     </tbody>

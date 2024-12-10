@@ -290,6 +290,8 @@ namespace PI4Daan.Controllers
             ViewBag.TotalPrice = filteredCollectibles.Sum(c => c.Price);
             ViewBag.TotalValue = filteredCollectibles.Sum(c => c.Value);
 
+            //Bereken het verschil tussen prijs en waarde
+
             // Categorieën en merken doorgeven aan de View
             ViewBag.Categories = _context.Categories
                                        .Select(c => c.Name)
@@ -303,6 +305,18 @@ namespace PI4Daan.Controllers
                                            .Select(b => b.Name)
                                            .Distinct()
                                            .ToListAsync();
+
+            // Bereken het verschil per categorie
+            var categoryDifferences = _context.Collectibles
+                .GroupBy(c => c.Category.Name)
+                .Select(g => new
+                {
+                    Category = g.Key,
+                    TotalDifference = g.Sum(c => c.Value - c.Price),
+                    AverageDifference = g.Average(c => c.Value - c.Price)
+                }).ToList();
+
+            ViewBag.CategoryDifferences = categoryDifferences;
 
             return View(filteredCollectibles);
         }
