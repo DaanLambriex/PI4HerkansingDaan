@@ -12,13 +12,91 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+:root {
+    --primary-color: #004B23; /* Donkergroen */
+    --secondary-color: #007E33; /* Lichtgroen */
+    --text-color: #ffffff; /* Witte tekst */
+}
+
 html {
   position: relative;
   min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background: url('/images/background_website.png') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-color);
+}
+
+    /* Overlay toevoegen */
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 15, 0, 0.7); /* Donkergroen met 70% transparantie */
+        z-index: -1; /* Zorg ervoor dat het onder de inhoud blijft */
+    }
+
+navbar .navbar-expand-sm {
+    background-color: rgba(0, 75, 0, 0.9) !important; /* Donkergroen met 70% transparantie */
+    backdrop-filter: blur(10px); /* Optioneel: voegt een blur toe achter de header */
+    border: none !important;
+    box-shadow: none !important;
+    color: white !important;
+    transition: background-color 0.3s ease; /* Smooth transition */
+    border-bottom: none !important;
+}
+
+/* Zorg dat de tekst goed zichtbaar blijft */
+.navbar .nav-link {
+    color: white !important;
+}
+
+.navbar-brand img {
+    max-height: 100px !important; /* Pas de hoogte aan naar wens */
+    width: auto; /* Houd de aspect ratio van de afbeelding */
+    object-fit: contain; /* Zorg ervoor dat de afbeelding netjes blijft */
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-color);
+        border-color: var(--secondary-color);
+    }
+
+.btn-warning {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+/* Voor andere elementen zoals tabellen, kaarten, etc. */
+.table thead {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.filters {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e9ecef;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -156,55 +234,6 @@ input[type="range"] {
         background: #ccc;
     }
 
-/* Knop Styling */
-.btn {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.btn-warning {
-    background-color: #ffc107;
-    border-color: #ffc107;
-    color: #000;
-}
-
-.btn-info {
-    background-color: #17a2b8;
-    border-color: #17a2b8;
-    color: #fff;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    border-color: #dc3545;
-    color: #fff;
-}
-
-/* Tabel styling */
-.table {
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-    .table thead {
-        background-color: #007bff;
-        color: #fff;
-    }
-
-.table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: #f8f9fa;
-}
-
-.table-hover tbody tr:hover {
-    background-color: #e9ecef;
-}
-
 /* Rating styling */
 .rating .text-warning {
     font-size: 1.2rem;
@@ -213,4 +242,130 @@ input[type="range"] {
 .rating .text-muted {
     font-size: 1.2rem;
     color: #ccc;
+}
+
+/*Home Index Styling*/
+.hero-section {
+    margin-top: 2rem;
+    color: #FFFFFF; /* Witte kleur passend bij de pubstijl */
+    margin-bottom: 30px;
+}
+
+.photo-scroll-container {
+    width: 1300px; /* Breedte van de zichtbare container */
+    height: 300px; /* Hoogte van de foto's */
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    background-color: transparent;
+}
+
+.photo-scroll {
+    display: flex;
+    width: max-content; /* Laat de inhoud zich automatisch uitrekken */
+    animation: scroll linear infinite; /* Continu scrollen */
+}
+
+    .photo-scroll img {
+        height: 300px; /* Stel de hoogte van de foto's in */
+        flex-shrink: 0; /* Voorkomt schalen */
+        margin: 0 10px; /* Optionele marges tussen de foto's */
+    }
+
+@keyframes scroll {
+    from {
+        transform: translateX(0); /* Beginpositie */
+    }
+
+    to {
+        transform: translateX(-4800px); /* Schuif de breedte van de zichtbare container */
+    }
+}
+
+.upcoming-events {
+    background-color: rgba(0, 20, 0, 0.7); /* Donkergroene kleur met transparantie */
+    color: white;
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 1300px; /* Maximale breedte van het vlak */
+    width: fit-content; /* Breedte aanpassen aan de inhoud */
+    margin: 0 auto; /* Centraal uitlijnen */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optionele schaduw voor stijl */
+    text-align: left; /* Tekst uitlijnen aan de linkerzijde */
+    margin-top: 30px;
+}
+
+.list-group-item {
+    background-color: transparent;
+    border: none;
+    color: var(--text-color); /* Accent kleur */
+}
+
+/* Centraal uitlijnen van de tabel en de styling verbeteren */
+.table-container {
+    margin: 0 auto;
+    max-width: 90%; /* Breedte beperken */
+    padding: 20px;
+    background-color: white; /* Witte achtergrond voor de kaart */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    margin: 0 auto; /* Centraal uitlijnen */
+}
+
+/* Knop styling met FontAwesome iconen */
+.action-buttons .btn {
+    margin: 0 5px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+    .action-buttons .btn i {
+        margin-right: 5px; /* Ruimte tussen icoon en tekst */
+    }
+
+.btn-edit {
+    background-color: #009A44;
+    color: white;
+}
+
+    .btn-edit:hover {
+        background-color: #009A44;
+    }
+
+.btn-details {
+    background-color: #FFFFFF;
+    color: black;
+}
+
+    .btn-details:hover {
+        background-color: #000000;
+        color: white;
+    }
+
+.btn-delete {
+    background-color: #FF8200;
+    color: white;
+}
+
+    .btn-delete:hover {
+        background-color: #FF8200;
+    }
+
+.list-group {
+    /*background-color: rgba(0, 20, 0, 0.7);  Donkergroene kleur met transparantie */
+    color: white;
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 1300px; /* Maximale breedte van het vlak */
+    width: fit-content; /* Breedte aanpassen aan de inhoud */
+    margin: 0 auto; /* Centraal uitlijnen */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optionele schaduw voor stijl */
+    text-align: left; /* Tekst uitlijnen aan de linkerzijde */
 }

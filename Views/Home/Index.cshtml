@@ -2,7 +2,70 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container text-center">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="display-1">
+            <span style="color: #009A44">Welkom</span>
+            <span style="color: #FFFFFF">bij</span>
+            <span style="color: #FF8200">Erin's Isle</span>
+        </h1>
+        <p class="lead">
+            Irish Pub, dé gezellige plek in het hart van Heerlen waar de Ierse gastvrijheid je met open armen verwelkomt!
+            Hier draait alles om plezier, goede gesprekken en onvergetelijke momenten met vrienden.
+        </p>
+        <a href="@Url.Action("List", "Collectibles")" class="btn btn-primary">Bekijk ons volledige aanbod</a>
+    </div>
+
+    <div class="photo-scroll-container">
+        <div class="photo-scroll">
+            <img src="/images/pub0.png" alt="Pub 0">
+            <img src="/images/pub1.png" alt="Pub 1">
+            <img src="/images/pub2.png" alt="Pub 2">
+            <img src="/images/pub3.png" alt="Pub 3">
+            <img src="/images/pub4.png" alt="Pub 4">
+            <img src="/images/pub5.png" alt="Pub 5">
+            <img src="/images/pub6.png" alt="Pub 6">
+            <img src="/images/pub7.png" alt="Pub 7">
+            <img src="/images/pub8.png" alt="Pub 8">
+            <img src="/images/pub9.png" alt="Pub 9">
+            <img src="/images/pub10.png" alt="Pub 10">
+            <img src="/images/pub11.png" alt="Pub 11">
+            <img src="/images/pub12.png" alt="Pub 12">
+            <img src="/images/pub13.png" alt="Pub 13">
+            <img src="/images/pub14.png" alt="Pub 14">
+
+            <img src="/images/pub0.png" alt="Pub 0">
+            <img src="/images/pub1.png" alt="Pub 1">
+            <img src="/images/pub2.png" alt="Pub 2">
+            <img src="/images/pub3.png" alt="Pub 3">
+            <img src="/images/pub4.png" alt="Pub 4">
+            <img src="/images/pub5.png" alt="Pub 5">
+            <img src="/images/pub6.png" alt="Pub 6">
+            <img src="/images/pub7.png" alt="Pub 7">
+            <img src="/images/pub8.png" alt="Pub 8">
+            <img src="/images/pub9.png" alt="Pub 9">
+            <img src="/images/pub10.png" alt="Pub 10">
+            <img src="/images/pub11.png" alt="Pub 11">
+            <img src="/images/pub12.png" alt="Pub 12">
+            <img src="/images/pub13.png" alt="Pub 13">
+            <img src="/images/pub14.png" alt="Pub 14">
+        </div>
+    </div>
+
+    <!-- Upcoming Events Section -->
+    <div class="upcoming-events">
+        <h2>Opkomende Evenementen</h2>
+        <ul>
+            <li>🎤 Karaoke - Elke vrijdagavond</li>
+            <li>❓ Pubquiz - Iedere eerste donderdag van de maand</li>
+            <li>🍺 Bierproeverij - 15 maart</li>
+            <li>☘️ St. Patrick's Day - 17 maart</li>
+        </ul>
+    </div>
 </div>
+
+<!-- Optional CSS -->
+<style>
+    
+</style>
