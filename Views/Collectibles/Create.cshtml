@@ -1,4 +1,4 @@
-﻿@model PI4Daan.Collectible
+﻿@model             Collectible
 
 @{
     ViewData["Title"] = "Create";
@@ -41,7 +41,7 @@
                     <div class="d-flex">
                         <select asp-for="CategoryId" class="form-select">
                             <option value="">-- Kies een categorie --</option>
-                            @foreach (var category in ViewBag.Categories as List<PI4Daan.Category>)
+                            @foreach (var category in ViewBag.Categories as List<Category>)
                             {
                                 <option value="@category.Id">@category.Name</option>
                             }
@@ -61,7 +61,7 @@
                     <div class="d-flex">
                         <select asp-for="BrandId" class="form-select">
                             <option value="">-- Kies een merk --</option>
-                            @foreach (var brand in ViewBag.Brands as List<PI4Daan.Brand>)
+                            @foreach (var brand in ViewBag.Brands as List<Brand>)
                             {
                                 <option value="@brand.Id">@brand.Name</option>
                             }
