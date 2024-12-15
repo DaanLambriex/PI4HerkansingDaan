@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PI4Daan
+namespace PI4Daan.Models
 {
     public class Collectible
     {

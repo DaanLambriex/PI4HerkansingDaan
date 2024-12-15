@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PI4Daan;
 using PI4Daan.Data;
+using PI4Daan.Models;
 
 namespace PI4Daan.Controllers
 {

@@ -1,4 +1,4 @@
-﻿namespace PI4Daan
+﻿namespace PI4Daan.Models
 {
     public class Brand
     {
